@@ -3,7 +3,7 @@ import aiohttp
 import discord
 
 # ── Config ────────────────────────────────────────────────────────────────────
-DISCORD_TOKEN   = "ODg3OTEwODQ5NDU1NDg5MDI0.GjKh7F.knW9-YeSiJHknlWal8IojYlZ8G0MZHQBAEKoFU"
+DISCORD_TOKEN   = "MTQ3ODkxMjQ4NTQ2ODgwMzIxNA.GnOahA.BXjPp8ow8Lx6FeodvyLBVUdjSntDTumr3kzz8Y"
 WATCH_CHANNEL   = 1478094308186914899
 WEBHOOK_URL     = "https://discord.com/api/webhooks/1478902753727221860/370Hl407VrENSMZUkWdimJ8TQZf2p2DWmII-Ao4psW70dbR5oeSGa78h2R4FOjlvn_1m"
 
@@ -81,3 +81,4 @@ async def on_message(message):
     await send_event_webhook(event_name, color, link, message.content)
 
 client.run(DISCORD_TOKEN)
+
