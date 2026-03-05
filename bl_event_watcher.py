@@ -1,10 +1,19 @@
+import os
 import re
 import aiohttp
 import discord
 
 # ── Config ────────────────────────────────────────────────────────────────────
+# Secrets are loaded from environment variables (set in Railway → Variables tab)
+# NEVER hardcode tokens in code that goes on GitHub.
+DISCORD_TOKEN   = os.environ.get("DISCORD_TOKEN", "")
 WATCH_CHANNEL   = 1478094308186914899
-WEBHOOK_URL     = "https://discord.com/api/webhooks/1478902753727221860/370Hl407VrENSMZUkWdimJ8TQZf2p2DWmII-Ao4psW70dbR5oeSGa78h2R4FOjlvn_1m"
+WEBHOOK_URL     = os.environ.get("WEBHOOK_URL", "")
+
+if not DISCORD_TOKEN:
+    raise RuntimeError("DISCORD_TOKEN env variable is not set!")
+if not WEBHOOK_URL:
+    raise RuntimeError("WEBHOOK_URL env variable is not set!")
 
 # ← paste the numeric ID of your @notify role here (right-click role → Copy ID)
 NOTIFY_ROLE_ID = 1478904991296131225
@@ -80,6 +89,3 @@ async def on_message(message):
     await send_event_webhook(event_name, color, link, message.content)
 
 client.run(DISCORD_TOKEN)
-
-
-
