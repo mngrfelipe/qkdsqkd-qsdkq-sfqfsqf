@@ -18,11 +18,15 @@ if not WEBHOOK_URL:
 # ← paste the numeric ID of your @notify role here (right-click role → Copy ID)
 NOTIFY_ROLE_ID = 1478904991296131225
 
-# Event keywords → display names + embed colors
-EVENT_TYPES = {
-    "deathmatch": ("Deathmatch",  0xE74C3C),   # red
-    "graveyard":  ("Graveyard",   0x9B59B6),   # purple
-}
+# Event keywords → (display name, embed color, list of aliases to match)
+EVENT_TYPES = [
+    ("Deathmatch", 0xE74C3C, [
+        "deathmatch", "death match", "dm", "deathm", "deathmach",
+    ]),
+    ("Graveyard", 0x9B59B6, [
+        "graveyard", "grave", "gy", "gyard", "graveyd", "gravyard",
+    ]),
+]
 
 # Only match roblox.com links (profile pages OR private server links)
 ROBLOX_URL_RE = re.compile(
@@ -66,25 +70,27 @@ async def on_message(message):
 
     low = message.content.lower()
 
-    # Detect event type
-    detected = None
-    for keyword, (name, color) in EVENT_TYPES.items():
-        if keyword in low:
-            detected = (name, color)
-            break
-
-    if not detected:
-        return
-
-    event_name, color = detected
-
-    # Must have a roblox.com link — ignore random messages with no link
+    # Always require a real roblox.com link — blocks phishing / random spam
     match = ROBLOX_URL_RE.search(message.content)
     if not match:
-        print(f"[SKIP] {event_name} — no roblox link found | \"{message.content[:60]}\"")
-        return
+        return   # no roblox link → ignore completely
     link = match.group(0)
 
+    # Try to detect a specific event type from keywords
+    detected = None
+    for (name, color, aliases) in EVENT_TYPES:
+        for kw in aliases:
+            if kw in low:
+                detected = (name, color)
+                break
+        if detected:
+            break
+
+    # Link only (no keyword) → treat as generic World Event
+    if not detected:
+        detected = ("World Event", 0x3498DB)   # blue
+
+    event_name, color = detected
     print(f"[DETECTED] {event_name} | {link} | \"{message.content[:80]}\"")
     await send_event_webhook(event_name, color, link, message.content)
 
